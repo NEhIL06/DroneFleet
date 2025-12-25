@@ -260,6 +260,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Author
 
-**Chand** - *Lead Developer* - [GitHub](https://github.com/chand)
+**Nehil Chandrakar** - *Lead Developer* - [GitHub](https://github.com/NEhiL06)
 
-Built with ❤️ for the FlytBase Design Challenge.
+
