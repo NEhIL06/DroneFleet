@@ -1,97 +1,167 @@
 # 🚁 Drone Survey Management System
 
-A comprehensive platform for planning, managing, and monitoring autonomous drone survey missions across multiple sites.
+[![Platform](https://img.shields.io/badge/Platform-Web-blue?style=for-the-badge)](https://img.shields.io/badge/Platform-Web-blue)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://img.shields.io/badge/TypeScript-5.x-blue)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://img.shields.io/badge/React-18-61DAFB)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs)](https://img.shields.io/badge/Node.js-18+-339933)
+[![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?style=for-the-badge&logo=prisma)](https://img.shields.io/badge/Prisma-6.x-2D3748)
 
-![Platform](https://img.shields.io/badge/Platform-Web-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
-![React](https://img.shields.io/badge/React-18-blue)
-![Node.js](https://img.shields.io/badge/Node.js-18+-green)
+A professional, enterprise-grade platform for planning, managing, and monitoring autonomous drone survey missions across global sites.
 
 ## 🌐 Live Demo
 
-**Frontend**: [https://drone-command-center.vercel.app](https://drone-command-center.vercel.app)  
-**Backend API**: [https://drone-survey-api.railway.app](https://drone-survey-api.railway.app)
+> [!IMPORTANT]
+> Access the live application and API using the links below.
+
+- **Frontend Dashboard**: [https://drone-command-center.vercel.app](https://drone-command-center.vercel.app)
+- **Backend API**: [https://drone-survey-api.railway.app](https://drone-survey-api.railway.app)
 
 ---
 
 ## 📋 Project Overview
 
-This system enables organizations to:
-- **Plan Missions**: Draw survey areas, configure flight patterns (Grid, Crosshatch, Perimeter)
-- **Manage Fleet**: Monitor drone status, battery levels, and availability
-- **Monitor in Real-time**: Track live drone position, telemetry, and mission progress
-- **Generate Reports**: View mission summaries, flight statistics, and analytics
+The Drone Survey Management System is designed to simplify complex drone operations. It provides a robust backbone for mission planning, real-time telemetry monitoring, fleet coordination, and automated reporting.
+
+### Core Capabilities
+- **Intelligent Planning**: Interactive map-based mission planning with support for Grid, Crosshatch, and Perimeter patterns.
+- **Real-time Monitoring**: Low-latency WebSocket telemetry for live tracking of drone position, battery, and mission progress.
+- **Fleet Coordination**: Centralized dashboard for monitoring drone health, status, and availability.
+- **Automated Reporting**: Post-mission analytics including duration, distance, and coverage area.
 
 ---
 
 ## 🏗️ System Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              FRONTEND (React + Vite)                        │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │  Dashboard   │  │  Missions    │  │    Fleet     │  │   Reports    │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘    │
-│           │                │                │                │              │
-│  ┌────────────────────────────────────────────────────────────────────┐    │
-│  │                        State Management                             │    │
-│  │          TanStack Query (REST)  +  Zustand (WebSocket)              │    │
-│  └────────────────────────────────────────────────────────────────────┘    │
-└────────────────────────────────────────────────────────────────────────────┘
-                              │ REST API         │ WebSocket
-                              ▼                  ▼
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           BACKEND (Node.js + Express)                       │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐    │
-│  │   Mission    │  │    Drone     │  │  Telemetry   │  │  Reporting   │    │
-│  │   Module     │  │   Module     │  │   Module     │  │   Module     │    │
-│  │              │  │              │  │              │  │              │    │
-│  │ - CRUD       │  │ - Inventory  │  │ - WebSocket  │  │ - Analytics  │    │
-│  │ - State      │  │ - Locking    │  │ - Simulator  │  │ - Summaries  │    │
-│  │   Machine    │  │ - Status     │  │ - Storage    │  │              │    │
-│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘    │
-│                              │                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐  │
-│  │                     Prisma ORM + PostgreSQL                          │  │
-│  └──────────────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
+The system follows a modern decoupled architecture with a focus on real-time data flow and state consistency.
+
+```mermaid
+graph TD
+    subgraph Frontend ["Frontend (React + Vite)"]
+        UI[User Interface]
+        Store[Zustand Store]
+        Query[TanStack Query]
+        WS_Client[Socket.IO Client]
+    end
+
+    subgraph Backend ["Backend (Node.js + Express)"]
+        API[REST API Controllers]
+        SM[Mission State Machine]
+        Gateway[Socket.IO Gateway]
+        Sim[Mission Simulator]
+        Service[Business Logic Services]
+    end
+
+    subgraph Database ["Data Layer"]
+        PG[(PostgreSQL)]
+        Prisma[Prisma ORM]
+    end
+
+    UI --> Store
+    UI --> Query
+    Query --> API
+    WS_Client <--> Gateway
+    API --> Service
+    Service --> SM
+    Service --> Prisma
+    Sim --> Gateway
+    Sim --> Prisma
+    Prisma --> PG
 ```
 
 ---
 
-## 📊 Data Flow
+## 📊 Mission Lifecycle
 
+Missions are governed by a strict state machine to ensure operational safety and data integrity.
+
+```mermaid
+stateDiagram-v2
+    [*] --> CREATED: Mission Planned
+    CREATED --> READY: Drone Assigned
+    READY --> IN_PROGRESS: Mission Started
+    IN_PROGRESS --> PAUSED: Mission Paused
+    PAUSED --> IN_PROGRESS: Mission Resumed
+    IN_PROGRESS --> COMPLETED: Mission Finished
+    
+    READY --> ABORTED: Emergency Abort
+    IN_PROGRESS --> ABORTED: Emergency Abort
+    PAUSED --> ABORTED: Emergency Abort
+    
+    COMPLETED --> [*]
+    ABORTED --> [*]
 ```
-                    Mission Lifecycle
-                    ═════════════════
 
-  CREATE           ASSIGN           START            COMPLETE
-    │                │                │                 │
-    ▼                ▼                ▼                 ▼
-┌────────┐     ┌────────┐      ┌───────────┐     ┌───────────┐
-│CREATED │ ──► │ READY  │ ───► │IN_PROGRESS│ ──► │ COMPLETED │
-└────────┘     └────────┘      └───────────┘     └───────────┘
-                   │                │
-                   │                ├────► PAUSED ─┐
-                   │                │              │
-                   ▼                ▼              ▼
-              ABORTED ◄────────────────────────────
+---
 
+## 🧬 Database Schema
 
-              Real-time Telemetry Flow
-              ════════════════════════
+The data model is normalized to support scalable fleet operations and historical telemetry tracking.
 
-┌────────┐    ┌─────────────┐    ┌───────────┐    ┌──────────┐
-│Frontend│◄───│  WebSocket  │◄───│ Simulator │◄───│ Database │
-│  Map   │    │   Server    │    │  Service  │    │Waypoints │
-└────────┘    └─────────────┘    └───────────┘    └──────────┘
-     │              │                  │
-     │         Every 2 sec:            │
-     │         - Position              │
-     │         - Battery               │
-     │         - Progress              │
-     │         - ETA                   │
-     └──────── Live Update ────────────┘
+```mermaid
+erDiagram
+    Drone ||--o{ Mission : "assigned to"
+    Mission ||--|| MissionFlightPath : "has"
+    Mission ||--o{ MissionEvent : "logs"
+    Mission ||--o{ MissionTelemetry : "records"
+    Mission ||--o| MissionReport : "generates"
+
+    Drone {
+        string id PK
+        string name
+        string model
+        string status "AVAILABLE | IN_MISSION | MAINTENANCE | OFFLINE"
+        float batteryLevel
+        float healthScore
+        float homeBaseLat
+        float homeBaseLng
+    }
+
+    Mission {
+        string id PK
+        string name
+        string status "CREATED | READY | IN_PROGRESS | PAUSED | COMPLETED | ABORTED"
+        string pattern "GRID | CROSSHATCH | PERIMETER"
+        float altitude
+        float speed
+        json surveyArea
+    }
+
+    MissionTelemetry {
+        string id PK
+        string missionId FK
+        float latitude
+        float longitude
+        float altitude
+        float batteryLevel
+        datetime recordedAt
+    }
+```
+
+---
+
+## 📡 Real-time Telemetry Flow
+
+Telemetry data flows from the simulator (or real drone) to the frontend with minimal latency.
+
+```mermaid
+sequenceDiagram
+    participant D as Drone/Simulator
+    participant B as Backend (Socket.IO)
+    participant F as Frontend (React)
+
+    F->>B: SUBSCRIBE_MISSION (missionId)
+    B-->>F: Subscription Confirmed
+    
+    loop Every 2 Seconds
+        D->>B: Update State (Pos, Battery, Progress)
+        B->>B: Persist Telemetry to DB
+        B->>F: TELEMETRY_UPDATE (Payload)
+        F->>F: Update Map Marker & UI
+    end
+
+    D->>B: MISSION_COMPLETED
+    B->>F: MISSION_COMPLETED
+    F->>F: Show Success & Generate Report
 ```
 
 ---
@@ -99,188 +169,108 @@ This system enables organizations to:
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 18** - UI Framework
-- **TypeScript** - Type Safety
-- **Vite** - Build Tool
-- **TanStack Query** - Server State Management
-- **Zustand** - Client State Management
-- **MapLibre GL** - Map Visualization
-- **Tailwind CSS** - Styling
-- **shadcn/ui** - Component Library
+| Technology | Purpose |
+|:--- |:--- |
+| **React 18** | Component-based UI architecture |
+| **TypeScript** | Static typing for robust development |
+| **MapLibre GL** | High-performance vector map rendering |
+| **TanStack Query** | Server state management and caching |
+| **Zustand** | Lightweight client-side state management |
+| **Tailwind CSS** | Utility-first styling for premium UI |
+| **shadcn/ui** | Accessible and beautiful UI components |
 
 ### Backend
-- **Node.js 18+** - Runtime
-- **Express.js** - Web Framework
-- **TypeScript** - Type Safety
-- **Prisma** - ORM
-- **PostgreSQL** - Database
-- **Socket.IO** - Real-time Communication
-- **Zod** - Validation
+| Technology | Purpose |
+|:--- |:--- |
+| **Node.js** | Scalable server-side runtime |
+| **Express** | Minimalist web framework |
+| **Prisma** | Modern type-safe ORM |
+| **PostgreSQL** | Reliable relational database |
+| **Socket.IO** | Real-time bidirectional communication |
+| **Zod** | Schema validation for API requests |
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL database
+- Node.js 18 or higher
+- PostgreSQL instance
 - npm or yarn
 
-### 1. Clone Repository
+### 1. Installation
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd flytbase
+
+# Install dependencies for both components
+cd backend && npm install
+cd ../drone-command-center && npm install
 ```
 
-### 2. Backend Setup
+### 2. Database Setup
 ```bash
 cd backend
-npm install
 cp .env.example .env
-# Edit .env with your database credentials
+# Configure DATABASE_URL in .env
 
-npx prisma generate
 npx prisma migrate dev --name init
 npm run seed
-npm run dev
 ```
 
-### 3. Frontend Setup
+### 3. Running Locally
 ```bash
-cd drone-command-center
-npm install
+# Start Backend (from backend directory)
+npm run dev
+
+# Start Frontend (from drone-command-center directory)
 npm run dev
 ```
 
-### 4. Access Application
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:3000
-- **WebSocket**: ws://localhost:3000/ws/telemetry
-
 ---
 
-## 📁 Project Structure
+## 🎯 Key Features & Implementation
 
-```
-flytbase/
-├── backend/
-│   ├── prisma/              # Database schema & migrations
-│   ├── src/
-│   │   ├── config/          # Environment & constants
-│   │   ├── modules/
-│   │   │   ├── mission/     # Mission CRUD & lifecycle
-│   │   │   ├── drone/       # Fleet management
-│   │   │   ├── telemetry/   # WebSocket & simulation
-│   │   │   └── reporting/   # Analytics & reports
-│   │   └── shared/          # Common utilities
-│   └── package.json
-│
-└── drone-command-center/
-    ├── src/
-    │   ├── components/      # Reusable UI components
-    │   ├── pages/           # Route components
-    │   ├── services/        # API & WebSocket clients
-    │   ├── stores/          # Zustand state
-    │   └── types/           # TypeScript interfaces
-    └── package.json
-```
-
----
-
-## 🎯 Key Features
-
-| Feature | Description |
-|---------|-------------|
-| **Mission Planning** | Draw polygons, preview flight paths, configure parameters |
-| **Flight Patterns** | Grid, Crosshatch, Perimeter with configurable spacing |
-| **Real-time Tracking** | Live drone position on map with smooth animation |
-| **Telemetry Display** | Battery, altitude, speed, heading, ETA |
-| **State Machine** | Enforced transitions: Start → Pause → Resume → Complete |
-| **Fleet Dashboard** | Drone status, battery levels, health monitoring |
-| **Reports & Analytics** | Mission summaries, organization statistics, charts |
+| Feature | Implementation Detail |
+|:--- |:--- |
+| **Mission Planning** | Polygon drawing with automatic waypoint generation based on pattern geometry. |
+| **State Machine** | Enforced server-side state transitions to prevent invalid operations. |
+| **Live Tracking** | Smooth marker interpolation and automatic map following. |
+| **Safety** | Emergency abort with reason logging and automatic drone release. |
+| **Analytics** | Aggregated data processing for mission and organization-level reports. |
 
 ---
 
 ## 🤖 AI Tool Usage
 
-This project was developed with assistance from AI tools to accelerate development:
+This project was developed using a "Human-in-the-loop" AI-assisted workflow.
 
-| Tool | Usage |
-|------|-------|
-| **Claude (Anthropic)** | Architecture design, code generation, debugging |
-| **Cursor AI** | Code completion, refactoring assistance |
+- **Claude 3.5 Sonnet**: Used for architectural brainstorming, complex logic implementation, and documentation.
+- **Cursor AI**: Leveraged for rapid prototyping, code refactoring, and boilerplate generation.
 
-### Where AI Helped:
-- **Architecture**: System design, module organization, data flow patterns
-- **API Design**: REST endpoint structure, WebSocket event contracts
-- **UI Scaffolding**: Component structure, form layouts, styling
-- **Debugging**: TypeScript errors, Prisma issues, WebSocket connectivity
-
-### Human Review:
-All AI-generated code was reviewed and refined to ensure:
-- ✅ Type safety and correctness
-- ✅ Error handling completeness
-- ✅ Performance optimization
-- ✅ Code consistency and style
+> [!NOTE]
+> All AI-generated code was rigorously reviewed, tested, and refined by a human engineer to ensure it meets production standards for safety, performance, and maintainability.
 
 ---
 
-## 📖 API Documentation
+## 📝 Design Decisions
 
-### REST Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/missions` | Create mission |
-| GET | `/api/missions` | List missions |
-| GET | `/api/missions/:id` | Get mission details |
-| POST | `/api/missions/:id/assign-drone` | Assign drone |
-| POST | `/api/missions/:id/start` | Start mission |
-| POST | `/api/missions/:id/pause` | Pause mission |
-| POST | `/api/missions/:id/resume` | Resume mission |
-| POST | `/api/missions/:id/abort` | Abort mission |
-| GET | `/api/drones` | List drones |
-| GET | `/api/reports/organization` | Org summary |
-| GET | `/api/reports/missions/:id` | Mission report |
-
-### WebSocket Events
-
-| Event | Direction | Description |
-|-------|-----------|-------------|
-| `SUBSCRIBE_MISSION` | Client → Server | Subscribe to mission telemetry |
-| `TELEMETRY_UPDATE` | Server → Client | Position & progress update |
-| `HEARTBEAT` | Server → Client | Connection alive signal |
-| `MISSION_COMPLETED` | Server → Client | Mission finished notification |
-
----
-
-## 📝 Design Decisions & Trade-offs
-
-### Trade-offs Made:
-
-1. **Simulation vs Real Drones**: Built complete simulation for demo; architecture supports real drone integration later
-
-2. **Polling Fallback**: Frontend polls every 5s as fallback if WebSocket fails
-
-3. **Single-org Model**: No multi-tenancy for simplicity; can be added via Prisma middleware
-
-4. **Append-only Telemetry**: Never update telemetry records, only insert new ones for audit trail
-
-### Safety Considerations:
-
-- State machine prevents invalid transitions
-- Drone locking prevents double-assignment
-- Battery threshold checks before mission start
-- Abort available at any active state
+1. **Atomic Transactions**: All mission state changes are wrapped in Prisma transactions to ensure that status updates and event logging are atomic.
+2. **Idempotency**: The API supports idempotency keys for critical operations (start/abort) to prevent duplicate execution in unstable network conditions.
+3. **Stateless Backend**: The backend is designed to be stateless, allowing for horizontal scaling behind a load balancer.
+4. **Optimistic UI**: The frontend uses optimistic updates for a snappy user experience while maintaining eventual consistency with the server.
 
 ---
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 👥 Author
 
-Built for FlytBase Design Challenge - December 2024
+**Chand** - *Lead Developer* - [GitHub](https://github.com/chand)
+
+Built with ❤️ for the FlytBase Design Challenge.
