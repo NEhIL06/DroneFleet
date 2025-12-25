@@ -4,7 +4,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=for-the-badge&logo=typescript)](https://img.shields.io/badge/TypeScript-5.x-blue)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://img.shields.io/badge/React-18-61DAFB)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=for-the-badge&logo=nodedotjs)](https://img.shields.io/badge/Node.js-18+-339933)
-[![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748?style=for-the-badge&logo=prisma)](https://img.shields.io/badge/Prisma-6.x-2D3748)
+[![Prisma](https://img.shields.io/badge/Prisma-7.2.0-2D3748?style=for-the-badge&logo=prisma)](https://img.shields.io/badge/Prisma-7.2.0-2D3748)
 
 A professional, enterprise-grade platform for planning, managing, and monitoring autonomous drone survey missions across global sites.
 
@@ -240,17 +240,6 @@ npm run dev
 | **Safety** | Emergency abort with reason logging and automatic drone release. |
 | **Analytics** | Aggregated data processing for mission and organization-level reports. |
 
----
-
-## 🤖 AI Tool Usage
-
-This project was developed using a "Human-in-the-loop" AI-assisted workflow.
-
-- **Claude 3.5 Sonnet**: Used for architectural brainstorming, complex logic implementation, and documentation.
-- **Cursor AI**: Leveraged for rapid prototyping, code refactoring, and boilerplate generation.
-
-> [!NOTE]
-> All AI-generated code was rigorously reviewed, tested, and refined by a human engineer to ensure it meets production standards for safety, performance, and maintainability.
 
 ---
 
