@@ -1,0 +1,202 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --foreground: 220 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
+
+    --primary: 220 70% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 90%;
+    --secondary-foreground: 220 30% 20%;
+
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 220 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 70% 50%;
+
+    --radius: 0.5rem;
+
+    
+    --status-available: 142 71% 45%;
+    --status-available-foreground: 0 0% 100%;
+    --status-in-mission: 220 70% 50%;
+    --status-in-mission-foreground: 0 0% 100%;
+    --status-warning: 38 92% 50%;
+    --status-warning-foreground: 0 0% 100%;
+    --status-error: 0 72% 51%;
+    --status-error-foreground: 0 0% 100%;
+    --status-paused: 262 83% 58%;
+    --status-paused-foreground: 0 0% 100%;
+    --status-completed: 142 71% 45%;
+    --status-completed-foreground: 0 0% 100%;
+    --status-created: 220 15% 50%;
+    --status-created-foreground: 0 0% 100%;
+
+    
+    --chart-1: 220 70% 50%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 262 83% 58%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 0 72% 51%;
+
+    
+    --sidebar-background: 220 20% 97%;
+    --sidebar-foreground: 220 30% 10%;
+    --sidebar-primary: 220 70% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 92%;
+    --sidebar-accent-foreground: 220 30% 20%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 220 70% 50%;
+
+    
+    --glow-primary: 0 0 20px hsl(220 70% 50% / 0.3);
+    --glow-success: 0 0 20px hsl(142 71% 45% / 0.3);
+    --glow-warning: 0 0 20px hsl(38 92% 50% / 0.3);
+    --glow-error: 0 0 20px hsl(0 72% 51% / 0.3);
+
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
+
+    --card: 222 47% 9%;
+    --card-foreground: 210 40% 96%;
+
+    --popover: 222 47% 9%;
+    --popover-foreground: 210 40% 96%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 215 25% 18%;
+    --secondary-foreground: 210 40% 96%;
+
+    --muted: 215 25% 14%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 217 91% 60%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 215 25% 18%;
+    --input: 215 25% 18%;
+    --ring: 217 91% 60%;
+
+    
+    --status-available: 142 71% 45%;
+    --status-available-foreground: 0 0% 100%;
+    --status-in-mission: 217 91% 60%;
+    --status-in-mission-foreground: 222 47% 6%;
+    --status-warning: 38 92% 50%;
+    --status-warning-foreground: 0 0% 10%;
+    --status-error: 0 72% 51%;
+    --status-error-foreground: 0 0% 100%;
+    --status-paused: 262 83% 58%;
+    --status-paused-foreground: 0 0% 100%;
+    --status-completed: 142 71% 45%;
+    --status-completed-foreground: 0 0% 100%;
+    --status-created: 215 20% 55%;
+    --status-created-foreground: 0 0% 100%;
+
+    
+    --chart-1: 217 91% 60%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 262 83% 58%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 0 72% 51%;
+
+    
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 215 25% 14%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 215 25% 18%;
+    --sidebar-ring: 217 91% 60%;
+
+    
+    --glow-primary: 0 0 30px hsl(217 91% 60% / 0.4);
+    --glow-success: 0 0 30px hsl(142 71% 45% / 0.4);
+    --glow-warning: 0 0 30px hsl(38 92% 50% / 0.4);
+    --glow-error: 0 0 30px hsl(0 72% 51% / 0.4);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+  .glow-success {
+    box-shadow: var(--glow-success);
+  }
+  .glow-warning {
+    box-shadow: var(--glow-warning);
+  }
+  .glow-error {
+    box-shadow: var(--glow-error);
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 5px hsl(var(--primary) / 0.3), 0 0 10px hsl(var(--primary) / 0.2);
+    }
+    to {
+      box-shadow: 0 0 10px hsl(var(--primary) / 0.5), 0 0 20px hsl(var(--primary) / 0.3);
+    }
+  }
+  
+  .gradient-mission-control {
+    background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--card)) 100%);
+  }
+  
+  .glass {
+    background: hsl(var(--card) / 0.8);
+    backdrop-filter: blur(8px);
+  }
+}

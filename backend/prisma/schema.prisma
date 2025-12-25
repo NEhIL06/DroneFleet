@@ -1,0 +1,227 @@
+// =====================================
+// Prisma Client Generator
+// =====================================
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+// =====================================
+// PostgreSQL Datasource
+// =====================================
+datasource db {
+  provider = "postgresql"
+}
+
+// =====================================
+// ENUMS
+// =====================================
+
+enum MissionStatus {
+  CREATED
+  READY
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  ABORTED
+}
+
+enum MissionPattern {
+  GRID
+  CROSSHATCH
+  PERIMETER
+}
+
+enum AbortReason {
+  LOW_BATTERY
+  OPERATOR_ABORT
+  SYSTEM_ERROR
+}
+
+enum DroneStatus {
+  AVAILABLE
+  IN_MISSION
+  OFFLINE
+}
+
+// =====================================
+// DRONES
+// =====================================
+
+model Drone {
+  id           String      @id @default(uuid())
+  name         String
+  batteryLevel Int         @default(100)
+  status       DroneStatus @default(AVAILABLE)
+  health       String      @default("OK")
+  lastSeenAt   DateTime?
+  
+  // Home base location for simulation
+  homeBaseLat  Float       @default(12.9716)  // Bangalore default
+  homeBaseLng  Float       @default(77.5946)
+  maxRange     Float       @default(10000)    // Max operational range in meters
+  
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  missions     Mission[]
+
+  @@index([status])
+  @@map("drones")
+}
+
+// =====================================
+// MISSIONS
+// =====================================
+
+model Mission {
+  id                String          @id @default(uuid())
+  name              String
+
+  status            MissionStatus   @default(CREATED)
+  pattern           MissionPattern
+
+  altitude          Int
+  overlapPercentage Int
+  speed             Int
+
+  surveyArea        Json
+  patternConfig     Json?
+
+  assignedDroneId   String?
+  assignedDrone     Drone?           @relation(fields: [assignedDroneId], references: [id])
+
+  abortReason       AbortReason?
+  abortReasonText   String?      // Free-text abort reason from user
+  
+  // Simulation phase: TRANSIT_TO_SURVEY, CONDUCTING_SURVEY, TRANSIT_HOME
+  phase             String?
+  phaseStartedAt    DateTime?
+
+  startedAt         DateTime?
+  completedAt       DateTime?
+  pausedAt          DateTime?
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  flightPath        MissionFlightPath?
+  telemetry         MissionTelemetry[]
+  events            MissionEvent[]
+  report            MissionReport?
+
+  @@index([status])
+  @@index([assignedDroneId])
+  @@map("missions")
+}
+
+// =====================================
+// MISSION FLIGHT PATHS
+// =====================================
+
+model MissionFlightPath {
+  id                        String   @id @default(uuid())
+  missionId                 String   @unique
+  mission                   Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  waypoints                 Json     // Array of {lat, lng} coordinates
+  waypointCount             Int
+  estimatedDistanceMeters   Float
+  estimatedDurationSeconds  Int
+
+  createdAt                 DateTime @default(now())
+
+  @@map("mission_flight_paths")
+}
+
+// =====================================
+// MISSION TELEMETRY (Time-Series)
+// =====================================
+
+model MissionTelemetry {
+  id          BigInt   @id @default(autoincrement())
+  missionId   String
+  mission     Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  // Position
+  latitude    Float
+  longitude   Float
+  altitude    Float?
+  heading     Float?   // Degrees 0-360
+  speed       Float?   // m/s
+  
+  // Mission Progress
+  phase       String?  // TRANSIT_TO_SURVEY, CONDUCTING_SURVEY, TRANSIT_HOME
+  progress    Int      // 0-100
+  etaSeconds  Int?
+  waypointIndex Int?   // Current waypoint being traversed
+  distanceTraveled Float? // Total distance in meters
+  distanceRemaining Float?
+  
+  // Drone Health
+  batteryLevel    Int?    // 0-100%
+  batteryVoltage  Float?  // Volts
+  signalStrength  Int?    // 0-100%
+  motorTemp       Float?  // Average motor temperature in Celsius
+  
+  // Survey Data (populated during CONDUCTING_SURVEY phase)
+  airQualityIndex   Int?      // 0-500 AQI
+  temperature       Float?    // Celsius
+  humidity          Float?    // 0-100%
+  particulateMatter Float?    // PM2.5 in µg/m³
+
+  recordedAt  DateTime @default(now())
+
+  @@index([missionId, recordedAt(sort: Desc)])
+  @@map("mission_telemetry")
+}
+
+// =====================================
+// MISSION EVENTS (Audit Log)
+// =====================================
+
+model MissionEvent {
+  id         String   @id @default(uuid())
+  missionId  String
+  mission    Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  eventType  String
+  payload    Json?
+
+  createdAt  DateTime @default(now())
+
+  @@index([missionId])
+  @@map("mission_events")
+}
+
+// =====================================
+// MISSION REPORTS (Post-Mission)
+// =====================================
+
+model MissionReport {
+  id              String   @id @default(uuid())
+  missionId       String   @unique
+  mission         Mission  @relation(fields: [missionId], references: [id], onDelete: Cascade)
+
+  durationSeconds Int
+  distanceMeters  Float
+  coverageAreaSqm Float
+
+  createdAt       DateTime @default(now())
+
+  @@map("mission_reports")
+}
+
+// =====================================
+// ORGANIZATION METRICS (Cached Aggregates)
+// =====================================
+
+model OrganizationMetrics {
+  id                              String   @id @default(uuid())
+  totalMissions                   Int      @default(0)
+  totalFlightTimeSeconds          Int      @default(0)
+  averageMissionDurationSeconds   Int      @default(0)
+  computedAt                      DateTime @default(now())
+
+  @@map("organization_metrics")
+}
